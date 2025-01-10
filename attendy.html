@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATTENDY</title>
+    <style>
+        body {
+            font-family: monospace, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #585858;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #585858;
+        }
+
+        .attendance-msg {
+            font-size: 1.2em;
+            color: #585858;
+        }
+
+        .qr-code {
+            margin: 20px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="attendanceContainer">
+        <h2>Attendance Tracking</h2>
+
+        <div class="qr-code">
+            <h3>Scan this QR Code to mark your attendance</h3>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?data=http://172.20.10.3:5500/attendy.html"
+                alt="QR Code">
+        </div>
+
+        <div id="attendanceStatus"></div>
+        <div id="formSection">
+            <h3>Enter Your Details</h3>
+            <form id="attendanceForm">
+                <input type="text" id="name" placeholder="Name" required><br>
+                <input type="email" id="email" placeholder="Email" required><br>
+                <input type="tel" id="mobile" placeholder="Mobile Number" required><br>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const userStatus = localStorage.getItem("userStatus");
+
+        const attendanceContainer = document.getElementById("attendanceContainer");
+        const formSection = document.getElementById("formSection");
+        const attendanceStatus = document.getElementById("attendanceStatus");
+
+        if (userStatus === "present") {
+            attendanceStatus.innerHTML = `<p class="attendance-msg">You are marked as present.</p>`;
+            formSection.style.display = "none";
+        } else {
+            attendanceStatus.innerHTML = `<p>Scan the QR code to register your attendance.</p>`;
+
+            document.getElementById("attendanceForm").addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                const name = document.getElementById("name").value;
+                const email = document.getElementById("email").value;
+                const mobile = document.getElementById("mobile").value;
+
+                localStorage.setItem("userName", name);
+                localStorage.setItem("userEmail", email);
+                localStorage.setItem("userMobile", mobile);
+                localStorage.setItem("userStatus", "present");
+
+                attendanceStatus.innerHTML = `<p class="attendance-msg">You are now marked as present, ${name}!</p>`;
+                formSection.style.display = "none";
+            });
+        }
+    </script>
+</body>
+
+</html>
